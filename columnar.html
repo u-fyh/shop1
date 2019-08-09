@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+
+        var data = [
+            {
+                name: '西瓜',
+                value: 100,
+
+            },
+            {
+                name: '葡萄',
+                value: 90,
+
+            },
+            {
+                name: '柠檬',
+                value: 60,
+
+            },
+            {
+                name: '苹果',
+                value: 75,
+            },
+            {
+                name: '蜜瓜',
+                value: 40,
+
+            },
+            {
+                name: '桃子',
+                value: 120,
+            },
+
+        ]
+        var canvas = document.createElement('canvas');
+        canvas.width = 500;
+        canvas.height = 500;
+        canvas.style.border = '1px solid #ccc';
+        document.body.appendChild(canvas);
+        var ctx = canvas.getContext('2d');
+        var maxVal = JSON.parse(JSON.stringify(data)).sort((a, b) => b.value - a.value)[0].value;
+        //存储颜色
+        var colorArr = data.map(function () {
+            return randColor();
+        });
+
+        //  var colorArr = [];
+        // for(var i = 0; i < data.length; i++){
+        //     // colorArr.push(randColor());/
+
+        // }
+        //    设置margin值
+        ctx.translate(50, 450);
+        var margin = 400 / (data.length + 1);
+        function drawAxis() {
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(0, -400);
+            ctx.moveTo(0, 0);
+            ctx.lineTo(400, 0);
+            ctx.stroke();
+        }
+
+
+        function drawSecond() {
+
+            //画刻度
+            ctx.save();
+            ctx.textAlign = 'end';
+            ctx.textBaseline = 'middle';
+            //画刻度
+            //刻度的样式
+            for (var i = 50; i <= 400; i += 50) {
+                //y轴
+                ctx.beginPath();
+                ctx.moveTo(-3, -i);
+                ctx.lineTo(400, -i);
+                ctx.stroke();
+                ctx.fillText((i / 400) * maxVal, -3, -i);
+
+            }
+            ctx.restore();
+        }
+
+
+        function third(e) {
+            ctx.save();
+            //渲染数据
+            ctx.textAlign = 'center';
+            for (var i = 0; i < data.length; i++) {
+                var h = data[i].value / maxVal * 400;
+                ctx.beginPath();
+                ctx.fillStyle = colorArr[i];
+                ctx.rect(margin * (i + 1) - 10, 0, 20, -h);    //  ctx.rect(x,y,w,h,); //画矩形的用法rect
+                ctx.closePath()
+                if(e && ctx.isPointInPath(e.offsetX,e.offsetY)){
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.fillStyle = 'yellow';
+                    ctx.rect(margin * (i + 1) - 10, 0, 20, -h);  
+                    // ctx.arc(250,250,120,startDeg*deg,(startDeg+endDeg)*360); 
+                    
+                }
+                ctx.fill();
+                ctx.fillText(data[i].name, margin * (i + 1), 20);
+                ctx.fillText(data[i].value, margin * (i + 1), -h - 5);
+                ctx.restore();
+            }
+           
+        }
+        canvas.onmousemove = function (e) {   //事件
+            console.log(e.offsetX, e.offsetY);
+            ctx.clearRect(-50, -450, 500, 500);
+            drawAxis();
+            drawSecond();
+            third(e);
+        }
+        drawAxis();
+        drawSecond();
+        third();
+
+        function randColor() {
+            return `rgba(${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)},.5)`
+        }
+        // console.log(maxVal);
+
+
+        // console.log(colorArr)
+
+
+    </script>
+</body>
+
+</html>
